@@ -5,9 +5,9 @@ package lex;
  */
 public class Token {
     private String text;
-    private Type type;
+    private String type;
 
-    public Token(String text, Type type) {
+    public Token(String text, String type) {
         this.text = text;
         this.type = type;
     }

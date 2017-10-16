@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Created by SilverNarcissus on 2017/10/16.
+ * 给定转换表和输入，生成token序列 （含有错误处理部分）
  */
 public class Monitor {
     // 转换表文件位置
@@ -22,6 +22,10 @@ public class Monitor {
         table = ReadHelper.readTable(TABLE_PATH);
     }
 
+    /**
+     * 给定转换表和输入文件位置，生成token序列
+     * @return token序列
+     */
     public List<Token> parse() {
         String sequence = ReadHelper.readInput(INPUT_PATH);
         int pointer = 0;
@@ -44,8 +48,8 @@ public class Monitor {
 
             //如果进入终态或出现错误
             if (state < 0) {
-                Type finalType = Type.fromIntToType(state);
-                if (finalType == Type.ERROR) {
+                String finalType = Type.intToType(state);
+                if (finalType.equals("ERROR")) {
                     errorHandling(line, loc);
                     return null;
                 }
@@ -68,8 +72,8 @@ public class Monitor {
 
         //处理结尾的一个字符
         state = table[state][BasicType.EMPTY.ordinal()];
-        Type finalType = Type.fromIntToType(state);
-        if (finalType == Type.ERROR) {
+        String finalType = Type.intToType(state);
+        if (finalType.equals("ERROR")) {
             errorHandling(line, loc);
             return null;
         }

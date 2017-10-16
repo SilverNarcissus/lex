@@ -1,52 +1,31 @@
 package lex;
 
+import java.util.ArrayList;
+
 /**
  * Created by SilverNarcissus on 2017/10/16.
  */
-public enum Type {
-    ID,
-    INTEGER,
-    REAL,
-    OPERATOR,
-    ERROR;
+public class Type {
+    private static ArrayList<String> typeList = new ArrayList<>();
 
-    /**
-     * 将转换表中的状态码转换为类型
-     * @param mark 状态码
-     * @return 类型
-     */
-    public static Type fromIntToType(int mark){
-        switch (mark){
-            case -1:
-                return ID;
-            case -2:
-                return INTEGER;
-            case -3:
-                return REAL;
-            case -4:
-                return OPERATOR;
-        }
-        return ERROR;
+    private static int count = 1;
+
+    public static void putRe(String name){
+        typeList.add(name);
+        count++;
     }
 
     /**
-     * 将类型转换为状态码，便于存储
-     * @param type 类型
-     * @return 状态码
+     * 将类型码转换为类型字段
+     * @param mark 类型码
+     * @return 类型字段
      */
-    public static int fromTypeToInt(Type type){
-        switch (type){
-            case ID:
-                return -1;
-            case INTEGER:
-                return -2;
-            case REAL:
-                return -3;
-            case OPERATOR:
-                return -4;
-            case ERROR:
-                return -5;
+    public static String intToType(int mark){
+        mark = Math.abs(mark);
+        if(mark == count){
+            return "ERROR";
         }
-        return -5;
+        return typeList.get(mark - 1);
     }
+
 }
