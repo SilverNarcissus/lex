@@ -7,7 +7,8 @@ public enum BasicType {
     LETTER,
     DIGIT,
     DELIMITER,
-    OPERATION,
+    OPERATOR,
+    DOT,
     EMPTY,
     UNKNOWN;
 
@@ -19,7 +20,7 @@ public enum BasicType {
      */
     public static BasicType fromCharToType(char input) {
         if (('a' <= input && input <= 'z')
-                || ('A' <= input && input <= 'Z') || input == '_') {
+                || ('A' <= input && input <= 'Z')) {
             return LETTER;
         }
 
@@ -34,7 +35,11 @@ public enum BasicType {
         if ((input == '+') || (input == '-') ||(input == '*') ||(input == '/') ||
              (input == '%') ||(input == '(') ||(input == ')') ||(input == '[') ||
                 (input == ']') ||(input == '{') ||(input == '|')){
-            return OPERATION;
+            return OPERATOR;
+        }
+
+        if(input == '.'){
+            return DOT;
         }
 
         return UNKNOWN;

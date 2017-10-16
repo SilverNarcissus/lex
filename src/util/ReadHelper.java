@@ -1,4 +1,4 @@
-package io_util;
+package util;
 
 import java.io.*;
 import java.util.Scanner;

@@ -1,6 +1,6 @@
 package lex;
 
-import io_util.ReadHelper;
+import util.ReadHelper;
 
 import java.util.LinkedList;
 import java.util.List;
