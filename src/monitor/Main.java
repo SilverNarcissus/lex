@@ -7,6 +7,5 @@ public class Main {
 
         Monitor monitor = new Monitor();
         System.out.println(monitor.parse());
-
     }
 }

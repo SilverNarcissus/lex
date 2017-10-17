@@ -1,4 +1,5 @@
 package monitor;
+
 import util.BasicType;
 import util.Type;
 
@@ -9,6 +10,9 @@ import java.util.List;
  * 给定转换表和输入，生成token序列 （含有错误处理部分）
  */
 class Monitor {
+    //关键字名称
+    private static final String KEYWORD_NAME = "KEYWORD";
+
     // 转换表文件位置
     private static final String TABLE_PATH = "table.t";
 
@@ -25,6 +29,7 @@ class Monitor {
 
     /**
      * 给定转换表和输入文件位置，生成token序列
+     *
      * @return token序列
      */
     public List<Token> parse() {
@@ -52,10 +57,10 @@ class Monitor {
             if (state < 0) {
                 String finalType = Type.intToType(state);
 
-                if(basicType == BasicType.DELIMITER){
+                if (basicType == BasicType.DELIMITER) {
                     state = 0;
-                    if(!finalType.equals("ERROR")){
-                        result.add(new Token(now,finalType));
+                    if (!finalType.equals("ERROR")) {
+                        addToken(result, now, finalType);
                         now = "";
                     }
                     pointer++;
@@ -67,7 +72,7 @@ class Monitor {
                     //System.out.println(c);
                     return null;
                 }
-                result.add(new Token(now,finalType));
+                addToken(result, now, finalType);
                 now = "";
 
                 state = 0;
@@ -93,16 +98,31 @@ class Monitor {
             //System.out.println("!");
             return null;
         }
-        result.add(new Token(now,finalType));
+        addToken(result, now, finalType);
         //
 
         return result;
     }
 
     /**
+     * 向结果集中添加一个token
+     * @param result 结果集
+     * @param now 当前字符串
+     * @param finalType 判定的类型
+     */
+    private void addToken(List<Token> result, String now, String finalType) {
+        if (Type.isKeyword(now)) {
+            result.add(new Token(now, KEYWORD_NAME));
+        } else {
+            result.add(new Token(now, finalType));
+        }
+    }
+
+    /**
      * 错误处理子程序
+     *
      * @param line 错误出现的行号
-     * @param loc 错误出现的列号
+     * @param loc  错误出现的列号
      */
     private void errorHandling(int line, int loc) {
         System.out.println("Error in the code at line " + line + " cross " + loc);

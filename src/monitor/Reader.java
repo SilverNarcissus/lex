@@ -49,9 +49,17 @@ class Reader {
             }
 
             while (scanner.hasNext()){
-                System.out.println("!!!!!");
-                Type.putRe(scanner.next());
+                String next = scanner.next();
+                if(next.equals("@")){
+                    break;
+                }
+                Type.putRe(next);
             }
+
+            while (scanner.hasNext()){
+                Type.putKeywords(scanner.next());
+            }
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
