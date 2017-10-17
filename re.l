@@ -12,6 +12,6 @@ DOT = \.
 # RE start:
 $ ID = {LETTER}~({LETTER}|{DIGIT})*
 $ INTEGER = {DIGIT}~{DIGIT}*
-$ REAL = {DIGIT}~{DIGIT}*~DOT~{DIGIT}~{DIGIT}*
+$ REAL = {DIGIT}~{DIGIT}*~{DOT}~{DIGIT}~{DIGIT}*
 $ OPERATOR = {OPERATOR}
 # RE end

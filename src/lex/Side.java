@@ -11,4 +11,9 @@ public class Side {
         this.to = to;
         this.type = type;
     }
+
+    @Override
+    public String toString(){
+        return "to: " + to + " type: " + type;
+    }
 }

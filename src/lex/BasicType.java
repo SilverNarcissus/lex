@@ -48,4 +48,24 @@ public enum BasicType {
     public static int fromTypeToLoc(BasicType type){
         return type.ordinal();
     }
+
+    public static BasicType fromStringToType(String type){
+        if(type.equals("LETTER")){
+            return LETTER;
+        }
+        if(type.equals("DIGIT")){
+            return DIGIT;
+        }
+        if(type.equals("DELIMITER")){
+            return DELIMITER;
+        }
+        if(type.equals("OPERATOR")){
+            return OPERATOR;
+        }
+        if(type.equals("DOT")){
+            return DOT;
+        }
+
+        return UNKNOWN;
+    }
 }
