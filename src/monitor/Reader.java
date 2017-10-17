@@ -1,37 +1,14 @@
-package util;
+package monitor;
 
-import lex.Type;
+import util.Type;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 /**
- * Created by SilverNarcissus on 2017/10/16.
+ * Created by SilverNarcissus on 2017/10/17.
  */
-public class ReadHelper {
-    public static List<String> readLFile(String fileName){
-        StringHelper stringHelper = new StringHelper();
-        ArrayList<String> result = new ArrayList<>();
-        try {
-            BufferedReader reader =new BufferedReader(new FileReader(new File(fileName)));
-            String re = "";
-            while((re = reader.readLine()) != null){
-                if(re.startsWith("$")){
-                    String[] express = re.substring(1).split("=");
-                    Type.putRe(express[0].trim());
-                    result.add(stringHelper.changeExpress(express[1].trim()));
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-        return result;
-    }
-
+class Reader {
     public static String readInput(String fileName) {
         String encoding = "UTF-8";
         File file = new File(fileName);
@@ -70,11 +47,16 @@ public class ReadHelper {
                     table[i][j] = scanner.nextInt();
                 }
             }
+
+            while (scanner.hasNext()){
+                System.out.println("!!!!!");
+                Type.putRe(scanner.next());
+            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 
+
         return table;
     }
-
 }

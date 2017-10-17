@@ -1,10 +1,19 @@
 package lex;
 
+import util.BasicType;
+
 /**
- * Created by SilverNarcissus on 2017/10/16.
+ * 该类表征了NFA中的一条边
  */
-public class Side {
+class Side {
+    /**
+     * 边的终点
+     */
     public int to;
+
+    /**
+     * 边的转换类型
+     */
     public BasicType type;
 
     public Side(int to, BasicType type) {
@@ -14,6 +23,6 @@ public class Side {
 
     @Override
     public String toString(){
-        return "to: " + to + " type: " + type;
+        return "number: " + to + " type: " + type;
     }
 }

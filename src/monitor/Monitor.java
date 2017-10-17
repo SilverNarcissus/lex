@@ -1,6 +1,6 @@
-package lex;
-
-import util.ReadHelper;
+package monitor;
+import util.BasicType;
+import util.Type;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * 给定转换表和输入，生成token序列 （含有错误处理部分）
  */
-public class Monitor {
+class Monitor {
     // 转换表文件位置
     private static final String TABLE_PATH = "table.t";
 
@@ -18,8 +18,9 @@ public class Monitor {
     // 转换表
     private int[][] table;
 
+
     public Monitor() {
-        table = ReadHelper.readTable(TABLE_PATH);
+        table = Reader.readTable(TABLE_PATH);
     }
 
     /**
@@ -27,7 +28,8 @@ public class Monitor {
      * @return token序列
      */
     public List<Token> parse() {
-        String sequence = ReadHelper.readInput(INPUT_PATH);
+        String sequence = Reader.readInput(INPUT_PATH);
+        //System.out.println(sequence);
         int pointer = 0;
         int state = 0;
 
@@ -44,17 +46,30 @@ public class Monitor {
             BasicType basicType = BasicType.fromCharToType(c);
             state = table[state][BasicType.fromTypeToLoc(basicType)];
 
-            System.out.println(state);
+            //System.out.println(c);
 
             //如果进入终态或出现错误
             if (state < 0) {
                 String finalType = Type.intToType(state);
+
+                if(basicType == BasicType.DELIMITER){
+                    state = 0;
+                    if(!finalType.equals("ERROR")){
+                        result.add(new Token(now,finalType));
+                        now = "";
+                    }
+                    pointer++;
+                    continue;
+                }
+
                 if (finalType.equals("ERROR")) {
                     errorHandling(line, loc);
+                    //System.out.println(c);
                     return null;
                 }
                 result.add(new Token(now,finalType));
                 now = "";
+
                 state = 0;
             }
             // 继续在DFA中运行
@@ -75,6 +90,7 @@ public class Monitor {
         String finalType = Type.intToType(state);
         if (finalType.equals("ERROR")) {
             errorHandling(line, loc);
+            //System.out.println("!");
             return null;
         }
         result.add(new Token(now,finalType));

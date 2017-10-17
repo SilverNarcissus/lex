@@ -1,4 +1,4 @@
-package util;
+package lex;
 
 import java.util.HashMap;
 import java.util.Stack;
@@ -6,7 +6,7 @@ import java.util.Stack;
 /**
  * Created by SilverNarcissus on 2017/10/16.
  */
-public class StringHelper {
+class StringHelper {
     HashMap<Character, Integer> priority;
     public StringHelper(){
         priority = new HashMap<>();

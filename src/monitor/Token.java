@@ -1,9 +1,9 @@
-package lex;
+package monitor;
 
 /**
  * Created by SilverNarcissus on 2017/10/16.
  */
-public class Token {
+class Token {
     private String text;
     private String type;
 

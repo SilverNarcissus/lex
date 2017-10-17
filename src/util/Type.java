@@ -1,9 +1,9 @@
-package lex;
+package util;
 
 import java.util.ArrayList;
 
 /**
- * Created by SilverNarcissus on 2017/10/16.
+ * 该类表征了.l文件中规定的所有正则字符串的名称
  */
 public class Type {
     private static ArrayList<String> typeList = new ArrayList<>();
@@ -26,6 +26,11 @@ public class Type {
             return "ERROR";
         }
         return typeList.get(mark - 1);
+    }
+
+
+    public static int getNumber(){
+        return count - 1;
     }
 
 }
