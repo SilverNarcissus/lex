@@ -9,42 +9,190 @@ import java.util.*;
  * 分析器，作用是将RE转换为DFA table
  */
 class Analyzer {
+    //table的列数
+    private static final int CROSS = BasicType.getNumber();
     // .l文件位置
     private static final String CONFIG_PATH = "re.l";
     // 转换表文件位置
     private static final String TABLE_PATH = "table.t";
+    private static int ERROR_CODE;
     // table
     private int[][] table;
     // line
     private int line;
     // 记录边的图
     private HashMap<Integer, List<Side>> sides;
-
     private HashMap<Integer, Integer> finalStates;
-
     //状态数
     private int stateCount;
-
-    private static int ERROR_CODE;
-
+    //删除掉的行
+    private List<Integer> deletedLine;
 
     public Analyzer() {
         sides = new HashMap<>();
         finalStates = new HashMap<>();
+        deletedLine = new ArrayList<>();
         stateCount = 1;
         line = 0;
     }
 
-    public void parse(){
+    public void parse() {
         reToNFA();
         NFAToDFA();
-        IOHelper.buildTableFile(table, line, BasicType.getNumber(), TABLE_PATH);
+        DFAToDFAO();
+        IOHelper.buildTableFile(table, line, CROSS, TABLE_PATH, deletedLine);
+    }
+
+    private void DFAToDFAO() {
+        //初始化分组
+        Set<Integer> start = new HashSet<>();
+        Set<Integer> end = new HashSet<>();
+        List<Group> level = new ArrayList<>();
+        for (int i = 0; i < line; i++) {
+            if (table[i][CROSS - 1] == ERROR_CODE) {
+                start.add(i);
+            } else {
+                end.add(i);
+            }
+        }
+        level.add(new Group(start, false));
+        level.add(new Group(end, false));
+        //递归进行分组
+        List<Group> newLevel = new ArrayList<>(level);
+        do {
+            level = newLevel;
+            newLevel = new ArrayList<>();
+            for (Group group : level) {
+                if (group.isStrong) {
+                    newLevel.add(new Group(group.states, true));
+                }
+                //对非强关联组做分解
+                else {
+                    int first = -1;
+                    Set<Integer> left = new HashSet<>();
+                    Set<Integer> right = new HashSet<>();
+                    divideGroup(level, group, first, left, right);
+                    //检查分组是否为强关联，如果是，下次可以不做检查
+                    boolean isStrong;
+                    isStrong = checkStrong(left, true);
+                    newLevel.add(new Group(left, isStrong));
+
+                    if (!right.isEmpty()) {
+                        isStrong = checkStrong(right, true);
+                        newLevel.add(new Group(right, isStrong));
+                    }
+                }
+            }
+        }
+        while (newLevel.size() != level.size());
+
+        //System.out.println(level);
+
+        for (Group finalGroup : level) {
+            if (finalGroup.states.size() > 1) {
+                int before = -1;
+                //取Set的第一个元素
+                for (int state : finalGroup.states) {
+                    if(before == -1){
+                        before = state;
+                        continue;
+                    }
+                    deletedLine.add(state);
+                }
+                for (int i = 0; i < line; i++) {
+                    for (int j = 0; j < CROSS; j++) {
+                        if (finalGroup.states.contains(table[i][j])){
+                            table[i][j] = before;
+                        }
+                    }
+                }
+            }
+        }
+        Collections.sort(deletedLine);
+
+        //System.out.println(deletedLine);
+        HashMap<Integer, Integer> map = new HashMap<>();
+        int loc = 0;
+        for (int i = 0; i < line; i++) {
+            if(i == deletedLine.get(loc)){
+                loc++;
+                continue;
+            }
+            map.put(i, i - loc);
+        }
+        System.out.println(deletedLine);
+        System.out.println(loc);
+
+
+        for (int i = 0; i < line; i++) {
+            if(!deletedLine.contains(i)){
+                for (int j = 0; j < CROSS; j++) {
+                    if(map.containsKey(table[i][j])){
+                        table[i][j] = map.get(table[i][j]);
+                    }
+                }
+            }
+        }
+
+    }
+
+    private boolean checkStrong(Set<Integer> group, boolean isStrong) {
+        int before = -1;
+        for (int now : group) {
+            if (before == -1) {
+                before = now;
+                continue;
+            }
+            for (int i = 0; i < CROSS; i++) {
+                if (table[before][i] != table[now][i]) {
+                    isStrong = false;
+                    break;
+                }
+            }
+        }
+        return isStrong;
+    }
+
+    private void divideGroup(List<Group> level, Group group, int first, Set<Integer> left, Set<Integer> right) {
+        for (int state : group.states) {
+            if (first == -1) {
+                first = state;
+                left.add(first);
+                continue;
+            }
+            //判断是否和第一个元素是关联元素
+            boolean flag = true;
+            for (int i = 0; i < CROSS; i++) {
+                System.out.println("!!!:" + first + " " + state);
+                if (table[first][i] == table[state][i]) {
+                    left.add(state);
+                    continue;
+                }
+                boolean isWake = false;
+                for (Group up : level) {
+                    if (up.states.contains(table[first][i]) && up.states.contains(table[state][i])) {
+                        isWake = true;
+                        break;
+                    }
+                }
+                flag = isWake;
+                if (!flag) {
+                    break;
+                }
+            }
+            if (flag) {
+                left.add(state);
+            } else {
+                right.add(state);
+            }
+        }
     }
 
     /**
      * 将生成的NFA换为一个DFA
      */
     private void NFAToDFA() {
+        //初始化变量
         Set<Integer> start = new HashSet<>();
         start.add(0);
         start = findClosure(start);
@@ -54,11 +202,12 @@ class Analyzer {
         Queue<Set<Integer>> stateQueue = new LinkedList<>();
         stateQueue.add(start);
 
+        //递归寻找所有DFA状态
         while (!stateQueue.isEmpty()) {
             Set<Integer> state = stateQueue.remove();
             //对各种发出边做到达闭包
             for (BasicType type : BasicType.values()) {
-                if(type == BasicType.EMPTY){
+                if (type == BasicType.EMPTY) {
                     break;
                 }
                 Set<Integer> newState = new HashSet<>();
@@ -95,12 +244,12 @@ class Analyzer {
                 }
             }
 
-            table[line][BasicType.getNumber() - 1] = ERROR_CODE;
+            table[line][CROSS - 1] = ERROR_CODE;
             //判断是否是结束点
             for (int point : state) {
                 if (finalStates.containsKey(point)) {
-                    for (int i = 0; i < BasicType.getNumber(); i++) {
-                        if(table[line][i] == ERROR_CODE){
+                    for (int i = 0; i < CROSS; i++) {
+                        if (table[line][i] == ERROR_CODE) {
                             System.out.println(finalStates.get(point));
                             table[line][i] = finalStates.get(point);
                         }
@@ -118,6 +267,12 @@ class Analyzer {
         }
     }
 
+    /**
+     * 寻找状态集合的 ε 闭包
+     *
+     * @param original 状态集合
+     * @return 态集合的 ε 闭包
+     */
     private Set<Integer> findClosure(Set<Integer> original) {
         Set<Integer> result = new HashSet<>(original);
         boolean flag = true;
@@ -149,11 +304,11 @@ class Analyzer {
         int start = 0;
         System.out.println(express);
         for (int i = 0; i < 4; i++) {
-            putSide(start, reToNFASingle(express.get(i), - i - 1), BasicType.EMPTY);
+            putSide(start, reToNFASingle(express.get(i), -i - 1), BasicType.EMPTY);
         }
 
         //System.out.println(sides);
-        table = new int[stateCount][BasicType.getNumber()];
+        table = new int[stateCount][CROSS];
     }
 
     private int reToNFASingle(String express, int finalType) {

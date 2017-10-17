@@ -50,16 +50,18 @@ class IOHelper {
      * @param cross 表的列数
      * @param path  .t表文件的路径
      */
-    public static void buildTableFile(int[][] table, int line, int cross, String path) {
+    public static void buildTableFile(int[][] table, int line, int cross, String path, List<Integer> deletedLine) {
         FileWriter writer = null;
         try {
             writer = new FileWriter(new File(path));
-            writer.write(line + " " + cross + "\n");
+            writer.write((line - deletedLine.size()) + " " + cross + "\n");
             for (int i = 0; i < line; i++) {
-                for (int j = 0; j < cross; j++) {
-                    writer.write(table[i][j] + " ");
+                if (!deletedLine.contains(i)) {
+                    for (int j = 0; j < cross; j++) {
+                        writer.write(table[i][j] + " ");
+                    }
+                    writer.write("\n");
                 }
-                writer.write("\n");
             }
 
             for (int i = 0; i < Type.getNumber(); i++) {
