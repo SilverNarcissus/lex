@@ -19,31 +19,76 @@ public enum BasicType {
      * @return 基本类型
      */
     public static BasicType fromCharToType(char input) {
-        if (('a' <= input && input <= 'z')
-                || ('A' <= input && input <= 'Z')) {
+        if (isLetter(input)) {
             return LETTER;
         }
 
-        if ('0' <= input && input <= '9') {
+        if (isDigit(input)) {
             return DIGIT;
         }
 
-        if ((input == ' ') || (input == '\t') || (input == '\n') || (input == ';')) {
+        if (isDelimiter(input)) {
             return DELIMITER;
         }
 
-        if ((input == '+') || (input == '-') ||(input == '*') ||(input == '/') ||
-             (input == '%') ||(input == '(') ||(input == ')') ||(input == '[') ||
-                (input == ']') ||(input == '{') || (input == '}') ||(input == '|')
-                 || (input == '=') || (input == '<') || (input == '>')){
+        if (isOperator(input)){
             return OPERATOR;
         }
 
-        if(input == '.'){
+        if(isDot(input)){
             return DOT;
         }
 
         return UNKNOWN;
+    }
+
+    /**
+     * 判断一个字符是否是点
+     * @param input 字符
+     * @return 该字符是否是点
+     */
+    private static boolean isDot(char input) {
+        return input == '.';
+    }
+
+    /**
+     * 判断一个字符是否是分隔符
+     * @param input 字符
+     * @return 该字符是否是分隔符
+     */
+    private static boolean isDelimiter(char input) {
+        return (input == ' ') || (input == '\t') || (input == '\n') || (input == ';');
+    }
+
+    /**
+     * 判断一个字符是否是数字
+     * @param input 字符
+     * @return 该字符是否是数字
+     */
+    private static boolean isDigit(char input) {
+        return '0' <= input && input <= '9';
+    }
+
+    /**
+     * 判断一个字符是否是字母
+     * @param input 字符
+     * @return 该字符是否是字母
+     */
+    private static boolean isLetter(char input) {
+        return ('a' <= input && input <= 'z')
+                || ('A' <= input && input <= 'Z');
+    }
+
+    /**
+     * 判断一个字符是否是操作符
+     * @param input 字符
+     * @return 该字符是否是操作符
+     */
+    private static boolean isOperator(char input) {
+        return (input == '+') || (input == '-') ||(input == '*') ||(input == '/') ||
+             (input == '%') ||(input == '(') ||(input == ')') ||(input == '[') ||
+                (input == ']') ||(input == '{') || (input == '}') ||(input == '|')
+                 || (input == '=') || (input == '<') || (input == '>');
     }
 
     /**

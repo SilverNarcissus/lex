@@ -11,23 +11,33 @@ import java.util.*;
 class Analyzer {
     //table的列数
     private static final int CROSS = BasicType.getNumber();
+
     // .l文件位置
     private static final String CONFIG_PATH = "re.l";
+
     // 转换表文件位置
     private static final String TABLE_PATH = "table.t";
+
+    // 错误状态码
     private static int ERROR_CODE;
+
     // table
     private int[][] table;
+
     // table行的大小
     private int line;
+
     // 记录边的图
     private HashMap<Integer, List<Side>> sides;
+
     // 记录最终状态的图
     // key ----- 最终状态号
     // value ----- 最终状态表征的token type
     private HashMap<Integer, Integer> finalStates;
+
     //状态数
     private int stateCount;
+
     //删除掉的行
     private List<Integer> deletedLine;
 
