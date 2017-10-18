@@ -1,7 +1,7 @@
 package monitor;
 
 /**
- * Created by SilverNarcissus on 2017/10/16.
+ * 定义了token的格式
  */
 class Token {
     private String text;

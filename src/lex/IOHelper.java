@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by SilverNarcissus on 2017/10/16.
+ * 帮助读取文件和生成.t文件的工具类
  */
 class IOHelper {
     static String[] keywords;

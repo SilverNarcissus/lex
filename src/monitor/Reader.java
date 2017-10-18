@@ -6,7 +6,7 @@ import java.io.*;
 import java.util.Scanner;
 
 /**
- * Created by SilverNarcissus on 2017/10/17.
+ * 帮助读取文件的工具类
  */
 class Reader {
     public static String readInput(String fileName) {

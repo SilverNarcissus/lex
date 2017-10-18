@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Stack;
 
 /**
- * Created by SilverNarcissus on 2017/10/16.
+ * 正则表达式中缀形式转换后缀形式的工具类
  */
 class StringHelper {
     HashMap<Character, Integer> priority;

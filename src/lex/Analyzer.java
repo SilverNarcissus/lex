@@ -18,10 +18,13 @@ class Analyzer {
     private static int ERROR_CODE;
     // table
     private int[][] table;
-    // line
+    // table行的大小
     private int line;
     // 记录边的图
     private HashMap<Integer, List<Side>> sides;
+    // 记录最终状态的图
+    // key ----- 最终状态号
+    // value ----- 最终状态表征的token type
     private HashMap<Integer, Integer> finalStates;
     //状态数
     private int stateCount;
@@ -36,6 +39,9 @@ class Analyzer {
         line = 0;
     }
 
+    /**
+     * 主方法，分析.l文件，生成.t文件
+     */
     public void parse() {
         reToNFA();
         NFAToDFA();
@@ -43,6 +49,9 @@ class Analyzer {
         IOHelper.buildTableFile(table, line, CROSS, TABLE_PATH, deletedLine);
     }
 
+    /**
+     * 优化 DFA 生成 DFAO
+     */
     private void DFAToDFAO() {
         //初始化分组
         Set<Integer> start = new HashSet<>();
@@ -68,17 +77,16 @@ class Analyzer {
                 }
                 //对非强关联组做分解
                 else {
-                    int first = -1;
                     Set<Integer> left = new HashSet<>();
                     Set<Integer> right = new HashSet<>();
-                    divideGroup(level, group, first, left, right);
+                    divideGroup(level, group, left, right);
                     //检查分组是否为强关联，如果是，下次可以不做检查
                     boolean isStrong;
-                    isStrong = checkStrong(left, true);
+                    isStrong = checkStrong(left);
                     newLevel.add(new Group(left, isStrong));
 
                     if (!right.isEmpty()) {
-                        isStrong = checkStrong(right, true);
+                        isStrong = checkStrong(right);
                         newLevel.add(new Group(right, isStrong));
                     }
                 }
@@ -88,6 +96,14 @@ class Analyzer {
 
         //System.out.println(level);
 
+        optimizeTable(level);
+    }
+
+    /**
+     * 根据分组优化生成的DFA （DFA->DFAO）
+     * @param level 状态分组
+     */
+    private void optimizeTable(List<Group> level) {
         for (Group finalGroup : level) {
             if (finalGroup.states.size() > 1) {
                 int before = -1;
@@ -120,8 +136,8 @@ class Analyzer {
             }
             map.put(i, i - loc);
         }
-        System.out.println(deletedLine);
-        System.out.println(loc);
+        //System.out.println(deletedLine);
+        //System.out.println(loc);
 
 
         for (int i = 0; i < line; i++) {
@@ -133,10 +149,15 @@ class Analyzer {
                 }
             }
         }
-
     }
 
-    private boolean checkStrong(Set<Integer> group, boolean isStrong) {
+    /**
+     * 检查输入的分组是否是强连接分组
+     * @param group 输入的分组
+     * @return 是否是强连接分组
+     */
+    private boolean checkStrong(Set<Integer> group) {
+        boolean isStrong = true;
         int before = -1;
         for (int now : group) {
             if (before == -1) {
@@ -153,7 +174,15 @@ class Analyzer {
         return isStrong;
     }
 
-    private void divideGroup(List<Group> level, Group group, int first, Set<Integer> left, Set<Integer> right) {
+    /**
+     * 对给定分组层及层中的一个分组进行下一步分组
+     * @param level 给定分组层
+     * @param group 层中的一个分组
+     * @param left 分出的第一个组
+     * @param right 分出的第二个组
+     */
+    private void divideGroup(List<Group> level, Group group, Set<Integer> left, Set<Integer> right) {
+        int first = -1;
         for (int state : group.states) {
             if (first == -1) {
                 first = state;
