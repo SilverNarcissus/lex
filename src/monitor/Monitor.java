@@ -24,7 +24,7 @@ class Monitor {
 
 
     public Monitor() {
-        table = Reader.readTable(TABLE_PATH);
+        table = IOHelper.readTable(TABLE_PATH);
     }
 
     /**
@@ -33,7 +33,7 @@ class Monitor {
      * @return token序列
      */
     public List<Token> parse() {
-        String sequence = Reader.readInput(INPUT_PATH);
+        String sequence = IOHelper.readInput(INPUT_PATH);
         //System.out.println(sequence);
         int pointer = 0;
         int state = 0;

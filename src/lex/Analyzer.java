@@ -104,13 +104,12 @@ class Analyzer {
         }
         while (newLevel.size() != level.size());
 
-        //System.out.println(level);
-
         optimizeTable(level);
     }
 
     /**
      * 根据分组优化生成的DFA （DFA->DFAO）
+     *
      * @param level 状态分组
      */
     private void optimizeTable(List<Group> level) {
@@ -119,7 +118,7 @@ class Analyzer {
                 int before = -1;
                 //取Set的第一个元素
                 for (int state : finalGroup.states) {
-                    if(before == -1){
+                    if (before == -1) {
                         before = state;
                         continue;
                     }
@@ -127,7 +126,7 @@ class Analyzer {
                 }
                 for (int i = 0; i < line; i++) {
                     for (int j = 0; j < CROSS; j++) {
-                        if (finalGroup.states.contains(table[i][j])){
+                        if (finalGroup.states.contains(table[i][j])) {
                             table[i][j] = before;
                         }
                     }
@@ -140,20 +139,17 @@ class Analyzer {
         HashMap<Integer, Integer> map = new HashMap<>();
         int loc = 0;
         for (int i = 0; i < line; i++) {
-            if(i == deletedLine.get(loc)){
+            if (i == deletedLine.get(loc)) {
                 loc++;
                 continue;
             }
             map.put(i, i - loc);
         }
-        //System.out.println(deletedLine);
-        //System.out.println(loc);
-
 
         for (int i = 0; i < line; i++) {
-            if(!deletedLine.contains(i)){
+            if (!deletedLine.contains(i)) {
                 for (int j = 0; j < CROSS; j++) {
-                    if(map.containsKey(table[i][j])){
+                    if (map.containsKey(table[i][j])) {
                         table[i][j] = map.get(table[i][j]);
                     }
                 }
@@ -163,6 +159,7 @@ class Analyzer {
 
     /**
      * 检查输入的分组是否是强连接分组
+     *
      * @param group 输入的分组
      * @return 是否是强连接分组
      */
@@ -186,9 +183,10 @@ class Analyzer {
 
     /**
      * 对给定分组层及层中的一个分组进行下一步分组
+     *
      * @param level 给定分组层
      * @param group 层中的一个分组
-     * @param left 分出的第一个组
+     * @param left  分出的第一个组
      * @param right 分出的第二个组
      */
     private void divideGroup(List<Group> level, Group group, Set<Integer> left, Set<Integer> right) {
@@ -202,7 +200,6 @@ class Analyzer {
             //判断是否和第一个元素是关联元素
             boolean flag = true;
             for (int i = 0; i < CROSS; i++) {
-                System.out.println("!!!:" + first + " " + state);
                 if (table[first][i] == table[state][i]) {
                     left.add(state);
                     continue;
@@ -289,20 +286,12 @@ class Analyzer {
                 if (finalStates.containsKey(point)) {
                     for (int i = 0; i < CROSS; i++) {
                         if (table[line][i] == ERROR_CODE) {
-                            System.out.println(finalStates.get(point));
                             table[line][i] = finalStates.get(point);
                         }
                     }
                 }
             }
             line++;
-        }
-
-        for (int i = 0; i < line; i++) {
-            for (int j = 0; j < 6; j++) {
-                System.out.print(table[i][j] + " ");
-            }
-            System.out.println();
         }
     }
 
@@ -341,12 +330,10 @@ class Analyzer {
         List<String> express = IOHelper.readLFile(CONFIG_PATH);
         ERROR_CODE = -Type.getNumber() - 1;
         int start = 0;
-        System.out.println(express);
         for (int i = 0; i < 4; i++) {
             putSide(start, reToNFASingle(express.get(i), -i - 1), BasicType.EMPTY);
         }
 
-        //System.out.println(sides);
         table = new int[stateCount][CROSS];
     }
 

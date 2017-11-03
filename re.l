@@ -1,7 +1,7 @@
 #basic definition of type (shouldn't be changed!)
 LETTER = [a-zA-Z]
 DIGIT = [0-9]
-DELIMITER = [\t\n\s]
+DELIMITER = [\t | \n | \s | ;]
 OPERATOR = [+ | - | \* | \/ | % | ( | ) | [ | ] | { | } | < | > | \. | =]
 EMPTY = ε
 DOT = \.

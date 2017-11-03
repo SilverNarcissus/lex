@@ -6,8 +6,11 @@ package monitor;
  * 输出：token序列
  */
 public class Main {
+    // 输出文件位置
+    private static final String OUTPUT_PATH = "out.txt";
+
     public static void main(String[] args) {
         Monitor monitor = new Monitor();
-        System.out.println(monitor.parse());
+        IOHelper.writeOutput(OUTPUT_PATH, monitor.parse());
     }
 }
